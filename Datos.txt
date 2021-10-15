@@ -1,0 +1,65 @@
+{
+    "cedula":"1007303580",
+    "nombre":"James Daniel",
+    "apellido":"Alzate Rios",
+    "edad":20,
+    "correo":"james.alzate22@gmail.com",
+    "semestre":8,
+    "listaMaterias":[
+        "Linea de Profundización 2",
+        "Ingeniaría de software 2",
+        "Bases de Datos"
+    ],
+    "numeros":[
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+    ]
+}
+
+{
+    "cedula":"1070990186",
+    "nombre":"Ivan Alexander",
+    "apellido":"Preciado Horta",
+    "edad":21,
+    "correo":"ivanalexanderpreciado07@gmail.com",
+    "semestre":8,
+    "listaMaterias":[
+        "Algebra Lineal",
+        "Logica y Algoritmia",
+        "Fundamentos de Ingenieria"
+    ],
+    "numeros":[
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+    ]
+}
+
+{
+    "cedula":"1006000000",
+    "nombre":"Paula Alejandra",
+    "apellido":"Guzman Cruz",
+    "edad":20,
+    "correo":"paulaguzman270@gmail.com",
+    "semestre":8,
+    "listaMaterias":[
+        "Programación 1",
+        "Estructuras de Información",
+        "Ingeniría de Software 1"
+    ],
+    "numeros":[
+        1,
+        2,
+        3,
+        4
+    ]
+}

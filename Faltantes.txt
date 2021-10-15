@@ -1,0 +1,5 @@
+1. Excepciones URL no existe
+2. Mostrar Errores de validación uno por linea
+3. Mostrar errores de validación de parametros URL
+4. Estudiante no encontrado PUT-DELETE
+5. Otra forma de capturar la url en el wrapper
