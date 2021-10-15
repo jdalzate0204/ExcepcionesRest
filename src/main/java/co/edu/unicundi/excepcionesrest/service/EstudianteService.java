@@ -1,14 +1,12 @@
 package co.edu.unicundi.excepcionesrest.service;
 
 import co.edu.unicundi.excepcionesrest.controller.MiObjectOutputStream;
-import co.edu.unicundi.excepcionesrest.exception.ExceptionWrapper;
 import co.edu.unicundi.excepcionesrest.info.EstudianteInfo;
 import co.edu.unicundi.excepcionesrest.info.EstudianteMetodo;
 import java.io.*;
 import java.util.*;
 import javax.validation.ConstraintViolation;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
 
 /**
  * Capa logica
@@ -76,7 +74,6 @@ public class EstudianteService {
                 
              if (errores.size() > 0) {
                  throw new IllegalArgumentException(errores.toString());
-                 
              } else {
                 //Selecciona el archivo
                 FileOutputStream file = new FileOutputStream(archivo);
@@ -104,8 +101,8 @@ public class EstudianteService {
     /**
      * Metodo que muestra todos los registros de estudiante 
      * @return Listado de estudiantes
-     * @throws Exception
      * @throws NotFoundException 
+     * @throws java.io.IOException 
      */
     public List<EstudianteInfo> mostrar() throws NotFoundException,IOException {
         //Creacion de la lisa estudiante 
@@ -139,9 +136,8 @@ public class EstudianteService {
     /**
      * Metodo que muestra la información de un estudiante en especifico
      * @param cedula
-     * @return Datos del estudiante 
-     * @throws NotFoundException
-     * @throws Exception 
+     * @return Datos del estotFoundException 
+     * @throws java.io.IOException 
      */
     public EstudianteInfo mostrarPorCedula(String cedula) throws NotFoundException, IOException {
         estudiante = null;
@@ -188,8 +184,8 @@ public class EstudianteService {
      * Metodo que modifica la información de un estudiante en especifico
      * @param cedula
      * @param est
-     * @throws NotFoundException
-     * @throws Exception 
+     * @throws NotFoundException 
+     * @throws java.io.IOException 
      */
     public void modificar(String cedula, EstudianteInfo est) throws NotFoundException, IOException {
         //Creacion de la lista estudiante 
@@ -244,10 +240,7 @@ public class EstudianteService {
                     archivoTemp.renameTo(archivo);
                 }
             }
-            }catch(IllegalArgumentException e){
-                throw e;
-            }
-            catch (NotFoundException e) {
+            }catch(IllegalArgumentException | NotFoundException e){
                 throw e;
             } 
          } else
@@ -257,8 +250,8 @@ public class EstudianteService {
     /**
      * Metodo que elimina un estudiante en especifico con toda su información
      * @param cedula
-     * @throws NotFoundException
-     * @throws Exception 
+     * @throws NotFoundException 
+     * @throws java.io.IOException 
      */
     public void eliminar(String cedula) throws NotFoundException, IOException{
         //Creacion de la lista 
