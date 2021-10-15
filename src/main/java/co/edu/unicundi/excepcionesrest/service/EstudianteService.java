@@ -1,11 +1,14 @@
 package co.edu.unicundi.excepcionesrest.service;
 
 import co.edu.unicundi.excepcionesrest.controller.MiObjectOutputStream;
+import co.edu.unicundi.excepcionesrest.exception.ExceptionWrapper;
 import co.edu.unicundi.excepcionesrest.info.EstudianteInfo;
 import co.edu.unicundi.excepcionesrest.info.EstudianteMetodo;
 import java.io.*;
 import java.util.*;
+import javax.validation.ConstraintViolation;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 
 /**
  * Capa logica
@@ -18,9 +21,9 @@ public class EstudianteService {
     //Declaracion de la lista de estudiates
     public List<EstudianteInfo> listaEstudiante;
     //Ruta del archivo
-    File archivo = new File("C:/Users/acer/Documents/1. Universidad/8° Semestre (2021-2)/Linea 2/ExcepcionesRest/ArchivoEstudiantes.txt");
+    File archivo = new File("C:/Users/PAULA GUZMAN/Documents/UNIVERSIDAD/8 SEMESTRE/LINEA DE PROFUNDIZACION II/ExcepcionesRest/ArchivoEstudiantes.txt");
     //Ruta del archivo temporal
-    File archivoTemp = new File("C:/Users/acer/Documents/1. Universidad/8° Semestre (2021-2)/Linea 2/ExcepcionesRest/Temporal.txt");
+    File archivoTemp = new File("C:/Users/PAULA GUZMAN/Documents/UNIVERSIDAD/8 SEMESTRE/LINEA DE PROFUNDIZACION II/ExcepcionesRest/Temporal.txt");
     //Se crea el objeto que cotiene le metodo para ingresar los atributos
     EstudianteMetodo em = new EstudianteMetodo();   
     
@@ -29,11 +32,20 @@ public class EstudianteService {
      * @param est
      * @throws IOException 
      */
-    public void agregar(EstudianteInfo est) throws IOException{
+    public void agregar(EstudianteInfo est) throws IOException,IllegalArgumentException{
         listaEstudiante =  new ArrayList<>();
         
         if (archivo.exists() && archivo.length() > 0) {
             try {
+                 HashMap<String, String> errores = new HashMap();
+                
+             for (ConstraintViolation error: est.validar())
+                 errores.put(error.getPropertyPath().toString(), error.getMessage());
+                
+             if (errores.size() > 0) {
+                 throw new IllegalArgumentException(errores.toString());
+                 
+             } else {
                 //Selecciona el archivo
                 FileOutputStream file = new FileOutputStream(archivo, true);
                 //Permite escrbir en el archivo
@@ -47,12 +59,25 @@ public class EstudianteService {
                 //Cierra la escritura
                 oos.close();
                 //Cierra el archivo
-                file.close();      
-            } catch (IOException e) {
+                file.close();  
+             }
+            }catch (IllegalArgumentException e){
+                throw e;
+            }
+            catch (IOException e) {
                 throw new IOException();
             }
         } else {
             try {
+                HashMap<String, String> errores = new HashMap();
+                
+             for (ConstraintViolation error: est.validar())
+                 errores.put(error.getPropertyPath().toString(), error.getMessage());
+                
+             if (errores.size() > 0) {
+                 throw new IllegalArgumentException(errores.toString());
+                 
+             } else {
                 //Selecciona el archivo
                 FileOutputStream file = new FileOutputStream(archivo);
                 //Permite escrbir en el archivo
@@ -67,9 +92,12 @@ public class EstudianteService {
                 oos.close();
                 //Cierra el archivo
                 file.close();
-            } catch (IOException e) {
+             }
+            } catch (IllegalArgumentException e){
+                throw e;
+            }catch (IOException e) {
                 throw new IOException();
-            }
+            } 
         }
     }
     
@@ -79,7 +107,7 @@ public class EstudianteService {
      * @throws Exception
      * @throws NotFoundException 
      */
-    public List<EstudianteInfo> mostrar() throws Exception, NotFoundException {
+    public List<EstudianteInfo> mostrar() throws NotFoundException,IOException {
         //Creacion de la lisa estudiante 
         listaEstudiante = new ArrayList<>();
         
@@ -101,11 +129,11 @@ public class EstudianteService {
                     file.close();
                     return listaEstudiante;
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw e;
             }
         } else
-            throw new NotFoundException();
+            throw new NotFoundException("Archivo no existente");
     }
     
     /**
@@ -115,7 +143,7 @@ public class EstudianteService {
      * @throws NotFoundException
      * @throws Exception 
      */
-    public EstudianteInfo mostrarPorCedula(String cedula) throws NotFoundException, Exception {
+    public EstudianteInfo mostrarPorCedula(String cedula) throws NotFoundException, IOException {
         estudiante = null;
         //Se crea la lista estudiante
         listaEstudiante = new ArrayList<>();
@@ -151,9 +179,7 @@ public class EstudianteService {
                 }           
             } catch (NotFoundException e) {
                 throw e;
-            } catch (Exception e) {
-                throw new Exception();
-            }
+            } 
         } else
             throw new NotFoundException("Archivo no encontrado");
     }
@@ -165,7 +191,7 @@ public class EstudianteService {
      * @throws NotFoundException
      * @throws Exception 
      */
-    public void modificar(String cedula, EstudianteInfo est) throws NotFoundException, Exception {
+    public void modificar(String cedula, EstudianteInfo est) throws NotFoundException, IOException {
         //Creacion de la lista estudiante 
         listaEstudiante = new ArrayList<>();
         //Creacion de lista nueva 
@@ -173,6 +199,16 @@ public class EstudianteService {
         
         if (archivo.exists()) {
             try {
+                 HashMap<String, String> errores = new HashMap();
+                
+            for (ConstraintViolation error: est.validar())
+                errores.put(error.getPropertyPath().toString(), error.getMessage());
+            
+            if (errores.size() > 0) {
+                throw new IllegalArgumentException(errores.toString());
+                //ew = new ExceptionWrapper("400", "BAD_REQUEST", "Error de validaciones de campo: " + errores.toString(), "/estudiantes/agregar");
+                //return Response.status(Response.Status.BAD_REQUEST).entity(ew).build();
+            } else {
                 //Selecciona el archivo para leerlo
                 FileInputStream fileIS = new FileInputStream(archivo);
                 //Permite leer el archivo
@@ -207,11 +243,13 @@ public class EstudianteService {
                     //Renonmbra el archivo nuevo 
                     archivoTemp.renameTo(archivo);
                 }
-            } catch (NotFoundException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new Exception();
             }
+            }catch(IllegalArgumentException e){
+                throw e;
+            }
+            catch (NotFoundException e) {
+                throw e;
+            } 
          } else
             throw new NotFoundException("Archivo no existente");
     }
@@ -222,7 +260,7 @@ public class EstudianteService {
      * @throws NotFoundException
      * @throws Exception 
      */
-    public void eliminar(String cedula) throws NotFoundException, Exception{
+    public void eliminar(String cedula) throws NotFoundException, IOException{
         //Creacion de la lista 
         listaEstudiante = new ArrayList<>();
         
@@ -259,9 +297,7 @@ public class EstudianteService {
                 }
             } catch (NotFoundException e) {
                 throw e;
-            } catch (Exception e) {
-                throw new Exception();
-            } 
+            }
         } else
             throw new NotFoundException("Archivo no encontrado");
     }

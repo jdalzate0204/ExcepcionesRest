@@ -32,25 +32,9 @@ public class EstudianteController {
     @POST
     @Path("/agregar")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response agregar(EstudianteInfo est) {
-        try {
-             HashMap<String, String> errores = new HashMap();
-                
-             for (ConstraintViolation error: est.validar())
-                 errores.put(error.getPropertyPath().toString(), error.getMessage());
-                
-             if (errores.size() > 0) {
-                 ew = new ExceptionWrapper("400", "BAD_REQUEST", "Error de validaciones de campo: " + errores.toString(), "/estudiantes/agregar");
-                 return Response.status(Response.Status.BAD_REQUEST).entity(ew).build();
-             } else {
-                 es.agregar(est);
-                 return Response.status(Response.Status.CREATED).entity(est.getNombre() + " Registrado Exitosamente").build();
-             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            ew = new ExceptionWrapper("500", "INTERNAL_SERVER_ERROR", "Error interno", "/estudiantes/agregar");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ew).build();
-        }
+    public Response agregar(EstudianteInfo est) throws IOException {
+        es.agregar(est);
+        return Response.status(Response.Status.CREATED).entity(est.getNombre() + " Registrado Exitosamente").build();
     }
     
     /**
@@ -60,19 +44,11 @@ public class EstudianteController {
     @GET
     @Path("/mostrar")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response mostrar(){
-        try {
+    public Response mostrar() throws NotFoundException, IOException {
+       
             es.mostrar();
             return Response.status(Response.Status.OK).entity(es.listaEstudiante).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            ew = new ExceptionWrapper("404", "NOT_FOUND", "Archivo no existente", "/estudiantes/mostrar");
-            return Response.status(Response.Status.NOT_FOUND).entity(ew).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            ew = new ExceptionWrapper("500", "INTERNAL_SERVER_ERROR", "Error interno", "/estudiantes/mostrar");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ew).build();
-        } 
+       
     }
     
     /**
@@ -86,20 +62,12 @@ public class EstudianteController {
     public Response mostrarPorCedula(@NotNull (message = "¡Se requieren cedula!")
                                      @Size (min = 7, max = 10, message = "¡Debe tener un tamaño entre 7 y 10 caracteres!")
                                      @Pattern(regexp = "^\\d+$", message = "¡Solo se admiten numeros!")
-                                     @PathParam("cedula") String cedula){
+                                     @PathParam("cedula") String cedula) throws NotFoundException, IOException{
         
-        try {
+ 
             es.mostrarPorCedula(cedula);
             return Response.status(Response.Status.OK).entity(es.estudiante).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            ew = new ExceptionWrapper("404", "NOT_FOUND", e.getMessage(), "/estudiantes/mostrar/{cedula}");
-            return Response.status(Response.Status.NOT_FOUND).entity(ew).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            ew = new ExceptionWrapper("500", "INTERNAL_SERVER_ERROR", "Error interno", "/estudiantes/mostrar/{cedula}");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ew).build();
-        }
+        
     }
     
     /**
@@ -114,30 +82,11 @@ public class EstudianteController {
     public Response modificar(@NotNull (message = "¡Se requieren cedula!")
                               @Size (min = 7, max = 10, message = "¡Debe tener un tamaño entre 7 y 10 caracteres!")
                               @Pattern(regexp = "^\\d+$", message = "¡Solo se admiten numeros!")
-                              @PathParam("cedula") String cedula, EstudianteInfo est){
+                              @PathParam("cedula") String cedula, EstudianteInfo est) throws NotFoundException,IOException{
         
-        try {
-            HashMap<String, String> errores = new HashMap();
-                
-            for (ConstraintViolation error: est.validar())
-                errores.put(error.getPropertyPath().toString(), error.getMessage());
-            
-            if (errores.size() > 0) {
-                ew = new ExceptionWrapper("400", "BAD_REQUEST", "Error de validaciones de campo: " + errores.toString(), "/estudiantes/agregar");
-                return Response.status(Response.Status.BAD_REQUEST).entity(ew).build();
-            } else {
-                es.modificar(cedula, est);
-                return Response.status(Response.Status.OK).entity("Registro de " + est.getNombre() + " Modificado Exitosamente").build();
-            }
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            ew = new ExceptionWrapper("404", "NOT_FOUND", e.getMessage(), "/estudiantes/modificarPorCedula/{cedula}");
-            return Response.status(Response.Status.NOT_FOUND).entity(ew).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            ew = new ExceptionWrapper("500", "INTERNAL_SERVER_ERROR", "Error interno", "/estudiantes/modificarPorCedula/{cedula}");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ew).build();
-        }
+            es.modificar(cedula, est);
+            return Response.status(Response.Status.OK).entity("Registro de " + est.getNombre() + " Modificado Exitosamente").build();
+  
     }
     
     /**
@@ -151,19 +100,10 @@ public class EstudianteController {
     public Response eliminar(@NotNull (message = "¡Se requieren cedula!")
                              @Size (min = 7, max = 10, message = "¡Debe tener un tamaño entre 7 y 10 caracteres!")
                              @Pattern(regexp = "^\\d+$", message = "¡Solo se admiten numeros!")
-                             @PathParam("cedula") String cedula){
-        
-        try {
+                             @PathParam("cedula") String cedula) throws NotFoundException,IOException{
+      
             es.eliminar(cedula);
             return Response.status(Response.Status.NO_CONTENT).build();
-        } catch (NotFoundException e){
-            e.printStackTrace();
-            ew = new ExceptionWrapper("404", "NOT_FOUND", e.getMessage(), "/estudiantes/eliminarPorCedula/{cedula}");
-            return Response.status(Response.Status.NOT_FOUND).entity(ew).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            ew = new ExceptionWrapper("500", "INTERNAL_SERVER_ERROR", "Error interno", "/estudiantes/eliminarPorCedula/{cedula}");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ew).build();
-        }
+        
     }
 }
