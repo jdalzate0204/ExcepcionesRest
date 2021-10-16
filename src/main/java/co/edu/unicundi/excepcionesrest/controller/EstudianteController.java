@@ -4,6 +4,8 @@ import co.edu.unicundi.excepcionesrest.exception.ExceptionWrapper;
 import co.edu.unicundi.excepcionesrest.info.EstudianteInfo;
 import co.edu.unicundi.excepcionesrest.service.EstudianteService;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javax.ejb.Stateless;
 import javax.validation.constraints.*;
 import javax.ws.rs.*;

@@ -4,6 +4,7 @@ import co.edu.unicundi.excepcionesrest.controller.MiObjectOutputStream;
 import co.edu.unicundi.excepcionesrest.info.EstudianteInfo;
 import co.edu.unicundi.excepcionesrest.info.EstudianteMetodo;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.*;
 import javax.validation.ConstraintViolation;
 import javax.ws.rs.NotFoundException;
@@ -19,9 +20,9 @@ public class EstudianteService {
     //Declaracion de la lista de estudiates
     public List<EstudianteInfo> listaEstudiante;
     //Ruta del archivo
-    File archivo = new File("C:/Users/PAULA GUZMAN/Documents/UNIVERSIDAD/8 SEMESTRE/LINEA DE PROFUNDIZACION II/ExcepcionesRest/ArchivoEstudiantes.txt");
+    File archivo = new File("C:/Users/acer/Documents/1. Universidad/8° Semestre (2021-2)/Linea 2/ExcepcionesRest/ArchivoEstudiantes.txt");
     //Ruta del archivo temporal
-    File archivoTemp = new File("C:/Users/PAULA GUZMAN/Documents/UNIVERSIDAD/8 SEMESTRE/LINEA DE PROFUNDIZACION II/ExcepcionesRest/Temporal.txt");
+    File archivoTemp = new File("C:/Users/acer/Documents/1. Universidad/8° Semestre (2021-2)/Linea 2/ExcepcionesRest/Temporal.txt");
     //Se crea el objeto que cotiene le metodo para ingresar los atributos
     EstudianteMetodo em = new EstudianteMetodo();   
     
@@ -29,8 +30,9 @@ public class EstudianteService {
      * Metodo que agrega un estudiante a la lista
      * @param est
      * @throws IOException 
+     * @throws java.net.URISyntaxException 
      */
-    public void agregar(EstudianteInfo est) throws IOException,IllegalArgumentException{
+    public void agregar(EstudianteInfo est) throws IOException, IllegalArgumentException {
         listaEstudiante =  new ArrayList<>();
         
         if (archivo.exists() && archivo.length() > 0) {

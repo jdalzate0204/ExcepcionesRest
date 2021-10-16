@@ -1,5 +1,8 @@
-1. Excepciones URL no existe
-2. Mostrar Errores de validación uno por linea
+1. Errores:
+	415 Json mal formado
+	formato diferente a JSON
+2. Capturar la url en el wrapper
+3. No quemar datos de wrapper
 3. Mostrar errores de validación de parametros URL
 4. Estudiante no encontrado PUT-DELETE
-5. Otra forma de capturar la url en el wrapper
+5. Insertar repetidos 
