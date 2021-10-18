@@ -4,8 +4,6 @@ import co.edu.unicundi.excepcionesrest.exception.ExceptionWrapper;
 import co.edu.unicundi.excepcionesrest.info.EstudianteInfo;
 import co.edu.unicundi.excepcionesrest.service.EstudianteService;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import javax.ejb.Stateless;
 import javax.validation.constraints.*;
 import javax.ws.rs.*;
@@ -33,7 +31,8 @@ public class EstudianteController {
     @POST
     @Path("/agregar")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response agregar(EstudianteInfo est) throws IOException {
+    public Response agregar(EstudianteInfo est) 
+            throws IOException {
         es.agregar(est);
         return Response.status(Response.Status.CREATED).entity(est.getNombre() + " Registrado Exitosamente").build();
     }
@@ -46,7 +45,8 @@ public class EstudianteController {
     @GET
     @Path("/mostrar")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response mostrar() throws NotFoundException, IOException {
+    public Response mostrar() 
+            throws NotFoundException, IOException {
         es.mostrar();
         return Response.status(Response.Status.OK).entity(es.listaEstudiante).build();
     }
@@ -63,7 +63,8 @@ public class EstudianteController {
     public Response mostrarPorCedula(@NotNull (message = "¡Se requieren cedula!")
                                      @Size (min = 7, max = 10, message = "¡Debe tener un tamaño entre 7 y 10 caracteres!")
                                      @Pattern(regexp = "^\\d+$", message = "¡Solo se admiten numeros!")
-                                     @PathParam("cedula") String cedula) throws NotFoundException, IOException{
+                                     @PathParam("cedula") String cedula) 
+            throws NotFoundException, IOException{
         es.mostrarPorCedula(cedula);
         return Response.status(Response.Status.OK).entity(es.estudiante).build();
     }
@@ -81,7 +82,8 @@ public class EstudianteController {
     public Response modificar(@NotNull (message = "¡Se requieren cedula!")
                               @Size (min = 7, max = 10, message = "¡Debe tener un tamaño entre 7 y 10 caracteres!")
                               @Pattern(regexp = "^\\d+$", message = "¡Solo se admiten numeros!")
-                              @PathParam("cedula") String cedula, EstudianteInfo est) throws NotFoundException,IOException{
+                              @PathParam("cedula") String cedula, EstudianteInfo est) 
+            throws NotFoundException,IOException{
         es.modificar(cedula, est);
         return Response.status(Response.Status.OK).entity("Registro de " + est.getNombre() + " Modificado Exitosamente").build();
     }
@@ -97,7 +99,8 @@ public class EstudianteController {
     public Response eliminar(@NotNull (message = "¡Se requieren cedula!")
                              @Size (min = 7, max = 10, message = "¡Debe tener un tamaño entre 7 y 10 caracteres!")
                              @Pattern(regexp = "^\\d+$", message = "¡Solo se admiten numeros!")
-                             @PathParam("cedula") String cedula) throws NotFoundException,IOException{
+                             @PathParam("cedula") String cedula) 
+            throws NotFoundException,IOException{
         es.eliminar(cedula);
         return Response.status(Response.Status.NO_CONTENT).build();
     }

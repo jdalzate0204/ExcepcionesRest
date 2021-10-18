@@ -5,10 +5,11 @@ import java.util.Date;
 
 /**
  *
- * @author acer
+ * @author James Daniel Alzate Rios
+ * @author Paula Alejandra Guzman Cruz
  */
 public class ExceptionWrapper implements Serializable{
-    private String codigo;
+    private Integer codigo;
     private String error;
     private String fecha;
     private String mensaje;
@@ -17,7 +18,7 @@ public class ExceptionWrapper implements Serializable{
     public ExceptionWrapper() {
     }
 
-    public ExceptionWrapper(String codigo, String error, String mensaje, String url) {
+    public ExceptionWrapper(Integer codigo, String error, String mensaje, String url) {
         this.codigo = codigo;
         this.error = error;
         this.fecha = new Date().toString();
@@ -25,11 +26,11 @@ public class ExceptionWrapper implements Serializable{
         this.url = url;
     }
 
-    public String getCodigo() {
+    public Integer getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(String codigo) {
+    public void setCodigo(Integer codigo) {
         this.codigo = codigo;
     }
 
