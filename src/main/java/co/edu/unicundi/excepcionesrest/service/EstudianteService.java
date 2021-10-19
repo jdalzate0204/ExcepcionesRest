@@ -222,7 +222,7 @@ public class EstudianteService {
      * @throws IOException 
      */
     public void modificar(String cedula, EstudianteInfo est) 
-            throws NotFoundException, IOException {
+            throws NotFoundException, IOException { 
         //Creacion de la lista estudiante 
         listaEstudiante = new ArrayList<>();
         //Creacion de lista nueva 
@@ -252,35 +252,33 @@ public class EstudianteService {
                             listaEstudiante = (List) ois.readObject();
                             //Recorre la lista estudiante
                             for (EstudianteInfo e : listaEstudiante) {
-                                //if (cedula.equals(e.getCedula())) {
-                                    //for (EstudianteInfo es : listaEstudiante) { 
-                                        if (cedula.equals(e.getCedula())) {
+                                if (cedula.equals(e.getCedula())) {
+                                    for (EstudianteInfo es : listaEstudiante) { 
+                                        if (cedula.equals(es.getCedula())) {
                                             em.datos(est);
                                             lista.add(est); 
                                             oos.writeObject(lista);
                                         }
-                                        if (!cedula.equals(e.getCedula()))
+                                        if (!cedula.equals(es.getCedula()))
                                             oos.writeObject(listaEstudiante);
-                                    //}
-                                /*} else 
-                                    throw new NotFoundException("Estudiante no encontrado");*/
+                                    }
+                                } else 
+                                    throw new NotFoundException("Estudiante no encontrado");
                             }
                         }
                     } catch (IOException | ClassNotFoundException e) {
+                        if (listaEstudiante.isEmpty())
+                            throw new IllegalStateException("La lista se encuentra vacia");
+
                         //Cierra la escritura
                         oos.close();
                         //Cierra la lectura  
                         ois.close();
-
+                        
                         //Elimina el archivo original 
                         archivo.delete();
                         //Renonmbra el archivo nuevo 
                         archivoTemp.renameTo(archivo);
-
-                        if (listaEstudiante.isEmpty())
-                            throw new IllegalStateException("La lista se encuentra vacia");
-                    } catch (NotFoundException e) {
-                        throw e; 
                     }
                 }
             } catch(IllegalArgumentException e){
@@ -321,30 +319,30 @@ public class EstudianteService {
                 try {
                     while (true) {
                         listaEstudiante = (List) ois.readObject();
-                        //Recorre la lista estudiante 
+                        //Recorre la lista estudiante  
                         for(EstudianteInfo e : listaEstudiante){
-                            //if(cedula.equals(e.getCedula())){
-                                //for (EstudianteInfo est : listaEstudiante) { 
-                                    if (!cedula.equals(e.getCedula()))
+                            if(cedula.equals(e.getCedula())){
+                                for (EstudianteInfo est : listaEstudiante) { 
+                                    if (!cedula.equals(est.getCedula()))
                                         oos.writeObject(listaEstudiante);
-                                //}
-                            /*} else
-                                throw new NotFoundException("Estudiante no encontrado");*/
+                                }
+                            } else
+                                throw new NotFoundException("Estudiante no encontrado");
                         }
                     }
                 } catch (IOException | ClassNotFoundException e) {
+                    if (listaEstudiante.isEmpty())
+                        throw new IllegalStateException("La lista se encuentra vacia");
+                    
                     //Cierra la escritura
                     oos.close();
                     //Cierra la lectura 
                     ois.close();
-
+                    
                     //Elimina el archivo original 
                     archivo.delete();
                     //Renonmbra el archivo nuevo 
-                    archivoTemp.renameTo(archivo);  
-
-                    if (listaEstudiante.isEmpty())
-                        throw new IllegalStateException("La lista se encuentra vacia");
+                    archivoTemp.renameTo(archivo);
                 }
             } catch (NotFoundException e) {
                 throw e;
