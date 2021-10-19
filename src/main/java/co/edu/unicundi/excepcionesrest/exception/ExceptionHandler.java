@@ -1,5 +1,6 @@
 package co.edu.unicundi.excepcionesrest.exception;
 
+import java.rmi.UnmarshalException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.*;
@@ -44,7 +45,13 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
                                       exception.getMessage(), 
                                       "");
             return Response.status(Response.Status.CONFLICT).entity(ew).build();
-        } 
+        } else if (exception instanceof WebApplicationException) { //415
+            ew = new ExceptionWrapper(Response.Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode(), 
+                                      Response.Status.UNSUPPORTED_MEDIA_TYPE.getReasonPhrase(), 
+                                      "Formato mal formado", 
+                                      "");
+            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(ew).build();
+        }
         else { //500
             ew = new ExceptionWrapper(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 
                                       Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase(), 
