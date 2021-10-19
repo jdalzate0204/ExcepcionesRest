@@ -3,7 +3,5 @@
 	formato diferente a JSON
 	mas parametros de los permitidos
 2. Capturar la url en el wrapper
-3. Algunos errores no salen como JSON
-4. Mostrar errores de validación de parametros URL
-5. Estudiante no encontrado PUT-DELETE
-6. Insertar repetidos
+3. Mostrar errores de validación de parametros URL
+4. Estudiante no encontrado PUT-DELETE (Nota: Comentariado, aveces funciona y otras no)

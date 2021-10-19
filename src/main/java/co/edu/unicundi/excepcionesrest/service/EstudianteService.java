@@ -16,7 +16,7 @@ public class EstudianteService {
     //Creacion del objeto que contien los atributos del estudiante
     public EstudianteInfo estudiante = new EstudianteInfo();
     //Declaracion de la lista de estudiates
-    public List<EstudianteInfo> listaEstudiante;
+    public List<EstudianteInfo> listaEstudiante; 
     //Ruta del archivo
     File archivo = new File("C:/Users/acer/Documents/1. Universidad/8° Semestre (2021-2)/Linea 2/ExcepcionesRest/ArchivoEstudiantes.txt");
     //Ruta del archivo temporal
@@ -29,10 +29,13 @@ public class EstudianteService {
      * @param est
      * @throws IOException
      * @throws IllegalArgumentException 
+     * @throws CloneNotSupportedException 
      */
     public void agregar(EstudianteInfo est) 
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, CloneNotSupportedException {
         listaEstudiante =  new ArrayList<>();
+        estudiante = null;
+        List<EstudianteInfo> lista = new ArrayList<>();
         
         if (archivo.exists() && archivo.length() > 0) {
             try {
@@ -44,21 +47,42 @@ public class EstudianteService {
                  if (errores.size() > 0)
                      throw new IllegalArgumentException(errores.toString());
                  else {
-                     //Selecciona el archivo
-                     FileOutputStream file = new FileOutputStream(archivo, true);
+                     //Selecciona el archivo 
+                     FileOutputStream fileOS = new FileOutputStream(archivo, true);
                      //Permite escrbir en el archivo
-                     MiObjectOutputStream oos = new MiObjectOutputStream(file);
+                     MiObjectOutputStream oos = new MiObjectOutputStream(fileOS);
+                     //Selecciona el archivo 
+                     FileInputStream fileIS = new FileInputStream(archivo);
+                     //Permite leer el archivo
+                     ObjectInputStream ois = new ObjectInputStream(fileIS);    
 
-                     em.datos(est);
-                     //Se añade los datos a la lista
-                     listaEstudiante.add(est);
-
-                     oos.writeObject(listaEstudiante);
-                     //Cierra la escritura
-                     oos.close();
-                     //Cierra el archivo
-                     file.close();  
+                    try {
+                        while (true) {
+                            listaEstudiante = (List) ois.readObject(); 
+                            //Recorre la lista estudiante 
+                            for(EstudianteInfo e : listaEstudiante){
+                                if(est.getCedula().equals(e.getCedula()))
+                                    estudiante = e;                                    
+                            } 
+                        }
+                    } catch (IOException | ClassNotFoundException e) {
+                        if (estudiante == null) {
+                            em.datos(est);
+                            //Se añade los datos a la lista
+                            lista.add(est);
+                            oos.writeObject(lista);
+                            listaEstudiante.addAll(lista);
+                            
+                            //Cierra la escritura
+                            ois.close();
+                            //Cierra el archivo
+                            fileOS.close();
+                        } else
+                            throw new CloneNotSupportedException("Cedula ya registrada");
+                    }
                  }
+            } catch (CloneNotSupportedException e) {
+                throw e;
             } catch (IllegalArgumentException e) {
                 throw e;
             } catch (IOException e) {
@@ -110,26 +134,26 @@ public class EstudianteService {
         
         if (archivo.exists()) {
             try {
-                if (listaEstudiante.isEmpty())
-                    throw new EmptyStackException();
-                else {
-                    //Selecciona el archivo 
-                    FileInputStream file = new FileInputStream(archivo);
-                    //Permite leer el archivo
-                    ObjectInputStream ois = new ObjectInputStream(file);
+                //Selecciona el archivo 
+                FileInputStream file = new FileInputStream(archivo);
+                //Permite leer el archivo
+                ObjectInputStream ois = new ObjectInputStream(file);
 
-                    try {
-                        while (true)
-                            listaEstudiante.addAll((List) ois.readObject());
-                    } catch (IOException | ClassNotFoundException e) {
-                        //Cierra la escritura
-                        ois.close();
-                        //Cierra el archivo
-                        file.close();
+                try {
+                    while (true)
+                        listaEstudiante.addAll((List) ois.readObject());
+                } catch (IOException | ClassNotFoundException e) {
+                    //Cierra la escritura
+                    ois.close();
+                    //Cierra el archivo
+                    file.close();
+
+                    if (listaEstudiante.isEmpty())
+                        throw new IllegalStateException("La lista se encuentra vacia");
+                    else
                         return listaEstudiante;
-                    }
                 }
-            } catch (EmptyStackException e) {
+            } catch (IllegalStateException e) {
                 throw e;
             } catch (IOException e) {
                 throw e;
@@ -153,41 +177,39 @@ public class EstudianteService {
         
         if (archivo.exists()) {
             try {
-                if (listaEstudiante.isEmpty())
-                    throw new EmptyStackException();
-                else {
-                    //Selecciona el archivo 
-                    FileInputStream file = new FileInputStream(archivo);
-                    //Permite leer el archivo
-                    ObjectInputStream ois = new ObjectInputStream(file);
+                //Selecciona el archivo 
+                FileInputStream file = new FileInputStream(archivo);
+                //Permite leer el archivo
+                ObjectInputStream ois = new ObjectInputStream(file);
 
-                    try {
-                        while (true) {
-                            listaEstudiante = (List) ois.readObject();
-                            //Recorre la lista estudiante 
-                            for(EstudianteInfo e : listaEstudiante){
-                                if(cedula.equals(e.getCedula())){
-                                    estudiante = e;
-                                }
-                            } 
-                        }
-                    } catch (IOException | ClassNotFoundException e) {
-                        //Cierra la escritura
-                        ois.close();
-                        //Cierra el archivo
-                        file.close();
-
-                        if (estudiante != null)
-                            return estudiante;
-                        else
-                            throw new NotFoundException("Estudiante no encontrado");
-                    }    
-                }
-            } catch (EmptyStackException e) {
-                throw e;
+                try {
+                    while (true) {
+                        listaEstudiante = (List) ois.readObject();
+                        //Recorre la lista estudiante 
+                        for(EstudianteInfo e : listaEstudiante){
+                            if(cedula.equals(e.getCedula())){
+                                estudiante = e;
+                            }
+                        } 
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    //Cierra la escritura
+                    ois.close();
+                    //Cierra el archivo
+                    file.close();
+                    
+                    if (listaEstudiante.isEmpty())
+                        throw new IllegalStateException("La lista se encuentra vacia");
+                    else if (estudiante != null)
+                        return estudiante;
+                    else
+                        throw new NotFoundException("Estudiante no encontrado"); 
+                }    
             } catch (NotFoundException e) {
                 throw e;
-            } 
+            } catch (IOException e) {
+                throw new IOException();
+            }
         } else
             throw new NotFoundException("Archivo no encontrado");
     }
@@ -208,50 +230,67 @@ public class EstudianteService {
         
         if (archivo.exists()) {
             try {
-                 HashMap<String, String> errores = new HashMap();
-                 
-                 for (ConstraintViolation error: est.validar())
-                     errores.put(error.getPropertyPath().toString(), error.getMessage());
-                 
-                 if (errores.size() > 0)
-                     throw new IllegalArgumentException(errores.toString());
-                 else {
-                    //Selecciona el archivo para leerlo
-                    FileInputStream fileIS = new FileInputStream(archivo);
-                    //Permite leer el archivo
-                    ObjectInputStream ois = new ObjectInputStream(fileIS);
-                    //Selecciona el archivo para escrbirlo
-                    FileOutputStream fileOS = new FileOutputStream(archivoTemp);
-                    //Permite escribir el archivo 
-                    ObjectOutputStream oos = new ObjectOutputStream(fileOS);
-                    
+                HashMap<String, String> errores = new HashMap();
+
+                for (ConstraintViolation error: est.validar())
+                    errores.put(error.getPropertyPath().toString(), error.getMessage());
+
+                if (errores.size() > 0)
+                    throw new IllegalArgumentException(errores.toString());
+                else {
+                   //Selecciona el archivo para leerlo
+                   FileInputStream fileIS = new FileInputStream(archivo);
+                   //Permite leer el archivo
+                   ObjectInputStream ois = new ObjectInputStream(fileIS);
+                   //Selecciona el archivo para escrbirlo
+                   FileOutputStream fileOS = new FileOutputStream(archivoTemp);
+                   //Permite escribir el archivo 
+                   ObjectOutputStream oos = new ObjectOutputStream(fileOS);
+
                     try {
                         while (true) {
                             listaEstudiante = (List) ois.readObject();
-                            //Recorre la lista estudiante 
+                            //Recorre la lista estudiante
                             for (EstudianteInfo e : listaEstudiante) {
-                                if (cedula.equals(e.getCedula())) {
-                                    em.datos(est);
-                                    lista.add(est);
-                                    oos.writeObject(lista); 
-                                } 
-                                if (!cedula.equals(e.getCedula()))
-                                    oos.writeObject(listaEstudiante);
+                                //if (cedula.equals(e.getCedula())) {
+                                    //for (EstudianteInfo es : listaEstudiante) { 
+                                        if (cedula.equals(e.getCedula())) {
+                                            em.datos(est);
+                                            lista.add(est); 
+                                            oos.writeObject(lista);
+                                        }
+                                        if (!cedula.equals(e.getCedula()))
+                                            oos.writeObject(listaEstudiante);
+                                    //}
+                                /*} else 
+                                    throw new NotFoundException("Estudiante no encontrado");*/
                             }
                         }
                     } catch (IOException | ClassNotFoundException e) {
                         //Cierra la escritura
                         oos.close();
-                        //Cierra la lectura 
+                        //Cierra la lectura  
                         ois.close();
+
                         //Elimina el archivo original 
                         archivo.delete();
                         //Renonmbra el archivo nuevo 
                         archivoTemp.renameTo(archivo);
+
+                        if (listaEstudiante.isEmpty())
+                            throw new IllegalStateException("La lista se encuentra vacia");
+                    } catch (NotFoundException e) {
+                        throw e; 
                     }
                 }
-            }catch(IllegalArgumentException | NotFoundException e){
+            } catch(IllegalArgumentException e){
                 throw e;
+            } catch(NotFoundException e){
+                throw e;
+            } catch(IllegalStateException e){
+                throw e;
+            }  catch (IOException e) {
+                throw new IOException();
             } 
          } else
             throw new NotFoundException("Archivo no existente");
@@ -277,29 +316,42 @@ public class EstudianteService {
                 //Selecciona el archivo para escrbirlo
                 FileOutputStream fileOS = new FileOutputStream(archivoTemp);
                 //Permite escribir el archivo 
-                ObjectOutputStream oos = new ObjectOutputStream(fileOS);
-            
+                ObjectOutputStream oos = new ObjectOutputStream(fileOS); 
+
                 try {
                     while (true) {
                         listaEstudiante = (List) ois.readObject();
-                        //Recorre la lista estudiante
-                        for (EstudianteInfo e : listaEstudiante) {
-                            if (!cedula.equals(e.getCedula()))
-                                oos.writeObject(listaEstudiante);
+                        //Recorre la lista estudiante 
+                        for(EstudianteInfo e : listaEstudiante){
+                            //if(cedula.equals(e.getCedula())){
+                                //for (EstudianteInfo est : listaEstudiante) { 
+                                    if (!cedula.equals(e.getCedula()))
+                                        oos.writeObject(listaEstudiante);
+                                //}
+                            /*} else
+                                throw new NotFoundException("Estudiante no encontrado");*/
                         }
-                    } 
+                    }
                 } catch (IOException | ClassNotFoundException e) {
                     //Cierra la escritura
                     oos.close();
                     //Cierra la lectura 
                     ois.close();
+
                     //Elimina el archivo original 
                     archivo.delete();
                     //Renonmbra el archivo nuevo 
-                    archivoTemp.renameTo(archivo); 
+                    archivoTemp.renameTo(archivo);  
+
+                    if (listaEstudiante.isEmpty())
+                        throw new IllegalStateException("La lista se encuentra vacia");
                 }
             } catch (NotFoundException e) {
                 throw e;
+            } catch (IllegalStateException e) { 
+                throw e;
+            } catch (IOException e) {
+                throw new IOException();
             }
         } else
             throw new NotFoundException("Archivo no encontrado");

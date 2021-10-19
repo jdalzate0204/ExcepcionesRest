@@ -26,13 +26,14 @@ public class EstudianteController {
      * Rest que llama al metodo que agrega un estudiante a la lista 
      * @param est recibe la informacion del estudiante
      * @return Mensaje de confirmacion
-     * @throws java.io.IOException
+     * @throws IOException
+     * @throws CloneNotSupportedException
      */
     @POST
     @Path("/agregar")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response agregar(EstudianteInfo est) 
-            throws IOException {
+            throws IOException, CloneNotSupportedException {
         es.agregar(est);
         return Response.status(Response.Status.CREATED).entity(est.getNombre() + " Registrado Exitosamente").build();
     }
